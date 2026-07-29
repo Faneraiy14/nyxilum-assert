@@ -1,0 +1,101 @@
+// arx-assert — маленька бібліотека тверджень для тестів на ArxLang.
+//
+// Досі тести самої мови писались вручну через if/print("ok")/print("ПРОВАЛ")
+// в кожному файлі окремо — ця бібліотека виносить той самий патерн у
+// перевикористовувані функції з рахунком пройдених/провалених перевірок.
+//
+// Використання:
+//   import "arx-assert"
+//
+//   func main() {
+//       var t = newTest("моя перевірка")
+//       assertEqual(t, 2 + 2, 4, "додавання")
+//       assertTrue(t, len([1,2,3]) == 3, "довжина масиву")
+//       testSummary(t)
+//   }
+
+struct TestState {
+    passed: i32
+    failed: i32
+    name: string
+}
+
+func newTest(name) {
+    print("=== " + name + " ===")
+    return TestState { passed: 0, failed: 0, name: name }
+}
+
+func TestState.assertEqual(actual, expected, label) {
+    if actual == expected {
+        print("  ✓ " + label)
+        self.passed = self.passed + 1
+    } else {
+        print("  ✗ " + label + " (очікувалось " + toString(expected) + ", отримано " + toString(actual) + ")")
+        self.failed = self.failed + 1
+    }
+}
+
+func TestState.assertNotEqual(actual, unexpected, label) {
+    if actual == unexpected {
+        print("  ✗ " + label + " (значення НЕ мало дорівнювати " + toString(unexpected) + ")")
+        self.failed = self.failed + 1
+    } else {
+        print("  ✓ " + label)
+        self.passed = self.passed + 1
+    }
+}
+
+func TestState.assertTrue(condition, label) {
+    if condition {
+        print("  ✓ " + label)
+        self.passed = self.passed + 1
+    } else {
+        print("  ✗ " + label + " (очікувалось true)")
+        self.failed = self.failed + 1
+    }
+}
+
+func TestState.assertFalse(condition, label) {
+    self.assertTrue(!condition, label)
+}
+
+func TestState.assertNull(value, label) {
+    self.assertTrue(isNull(value), label)
+}
+
+// Порівнює масиви поелементно (== для масивів порівнював би посилання,
+// не вміст) — окрема перевірка довжини й кожного елемента з понятним
+// повідомленням, а не просто "false".
+func TestState.assertArrayEqual(actual, expected, label) {
+    if len(actual) != len(expected) {
+        print("  ✗ " + label + " (різна довжина: " + toString(len(actual)) + " проти " + toString(len(expected)) + ")")
+        self.failed = self.failed + 1
+        return
+    }
+    var i = 0
+    var allMatch = true
+    while i < len(actual) {
+        if actual[i] != expected[i] {
+            allMatch = false
+        }
+        i = i + 1
+    }
+    if allMatch {
+        print("  ✓ " + label)
+        self.passed = self.passed + 1
+    } else {
+        print("  ✗ " + label + " (елементи не збігаються)")
+        self.failed = self.failed + 1
+    }
+}
+
+func TestState.summary() {
+    var total = self.passed + self.failed
+    print("")
+    print(self.name + ": " + toString(self.passed) + "/" + toString(total) + " пройдено")
+    if self.failed > 0 {
+        print("Є провалені перевірки (" + toString(self.failed) + ").")
+    } else {
+        print("Усі перевірки пройдено.")
+    }
+}

@@ -1,0 +1,20 @@
+import "../main.arx"
+
+func main() {
+    var t = newTest("arx-assert: самоперевірка")
+
+    t.assertEqual(2 + 2, 4, "додавання")
+    t.assertEqual("а" + "б", "аб", "конкатенація рядків")
+    t.assertNotEqual(5, 6, "assertNotEqual на різних значеннях")
+    t.assertTrue(3 > 1, "assertTrue на істинній умові")
+    t.assertFalse(1 > 3, "assertFalse на хибній умові")
+    t.assertNull(null, "assertNull на null")
+
+    var arr1 = [1, 2, 3]
+    var arr2 = [1, 2, 3]
+    t.assertArrayEqual(arr1, arr2, "однакові масиви")
+
+    t.summary()
+}
+
+main()
