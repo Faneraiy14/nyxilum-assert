@@ -15,6 +15,9 @@ func main() {
     t.assertArrayEqual(arr1, arr2, "однакові масиви")
 
     t.summary()
+    if t.failed > 0 {
+        exit(1)
+    }
 }
 
 main()

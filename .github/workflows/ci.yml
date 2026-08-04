@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    # Чиста ArxLang-бібліотека, без власного коду поза .arx — потрібен
+    # лише зібраний ArxNode, щоб виконати tests/self_test.arx.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: arx-assert
+
+      - uses: actions/checkout@v4
+        with:
+          repository: Faneraiy14/ArxLang
+          path: ArxLang
+
+      - uses: actions/checkout@v4
+        with:
+          repository: Faneraiy14/ArxDb
+          path: ArxDb
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build ArxLang (net10.0)
+        working-directory: ArxLang
+        run: dotnet build src/ArxLang -f net10.0 -p:EnableWindowsTargeting=true --configuration Release
+
+      - name: Run self_test.arx
+        working-directory: arx-assert
+        run: "$GITHUB_WORKSPACE/ArxLang/src/ArxLang/bin/Release/net10.0/ArxLang tests/self_test.arx"
