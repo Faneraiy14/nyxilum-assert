@@ -1,28 +1,28 @@
-# arx-assert
+# nyxilum-assert
 
 Маленька бібліотека тверджень (assertions) для тестів на
-[ArxLang](https://github.com/Faneraiy14/ArxLang).
+[NyxilumLang](https://github.com/Faneraiy14/NyxilumLang).
 
 ## Навіщо
 
-Тести самої мови (`tests/*.arx` в репозиторії ArxLang) досі пишуться
+Тести самої мови (`tests/*.nx` в репозиторії NyxilumLang) досі пишуться
 вручну — в кожному файлі свій `if x == y { print("ок") } else { print("ПРОВАЛ") }`.
-`arx-assert` виносить цей патерн у функції, які самі рахують
+`nyxilum-assert` виносить цей патерн у функції, які самі рахують
 пройдені/провалені перевірки і друкують зрозумілий підсумок.
 
 ## Встановлення
 
 ```bash
-arx install Faneraiy14/arx-assert
+nx install Faneraiy14/nyxilum-assert
 ```
 
-Тягне репозиторій у `arx_modules/arx-assert/` (потрібен `arx` —
-[ArxNode](https://github.com/Faneraiy14/ArxNode)).
+Тягне репозиторій у `nx_modules/nyxilum-assert/` (потрібен `nx` —
+[NyxilumNode](https://github.com/Faneraiy14/NyxilumNode)).
 
 ## Використання
 
-```arx
-import "arx-assert"
+```nx
+import "nyxilum-assert"
 
 func main() {
     var t = newTest("моя перевірка")
@@ -80,7 +80,7 @@ main()
 `summary()` лише друкує результат і нічого не робить із кодом виходу
 процесу — для CI прокинь його сам через вбудований `exit(code)`:
 
-```arx
+```nx
 t.summary()
 if t.failed > 0 {
     exit(1)
@@ -90,7 +90,7 @@ if t.failed > 0 {
 ## Тести
 
 ```bash
-arx tests/self_test.arx
+nx tests/self_test.nx
 ```
 
 ## Ліцензія

@@ -1,7 +1,7 @@
-import "../main.arx"
+import "../main.nx"
 
 func main() {
-    var t = newTest("arx-assert: самоперевірка")
+    var t = newTest("nyxilum-assert: самоперевірка")
 
     t.assertEqual(2 + 2, 4, "додавання")
     t.assertEqual("а" + "б", "аб", "конкатенація рядків")

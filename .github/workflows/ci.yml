@@ -8,32 +8,32 @@ on:
 
 jobs:
   test:
-    # Чиста ArxLang-бібліотека, без власного коду поза .arx — потрібен
-    # лише зібраний ArxNode, щоб виконати tests/self_test.arx.
+    # Чиста NyxilumLang-бібліотека, без власного коду поза .nx — потрібен
+    # лише зібраний NyxilumNode, щоб виконати tests/self_test.nx.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          path: arx-assert
+          path: nyxilum-assert
 
       - uses: actions/checkout@v4
         with:
-          repository: Faneraiy14/ArxLang
-          path: ArxLang
+          repository: Faneraiy14/NyxilumLang
+          path: NyxilumLang
 
       - uses: actions/checkout@v4
         with:
-          repository: Faneraiy14/ArxDb
-          path: ArxDb
+          repository: Faneraiy14/NyxilumDb
+          path: NyxilumDb
 
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      - name: Build ArxLang (net10.0)
-        working-directory: ArxLang
-        run: dotnet build src/ArxLang -f net10.0 -p:EnableWindowsTargeting=true --configuration Release
+      - name: Build NyxilumLang (net10.0)
+        working-directory: NyxilumLang
+        run: dotnet build src/NyxilumLang -f net10.0 -p:EnableWindowsTargeting=true --configuration Release
 
-      - name: Run self_test.arx
-        working-directory: arx-assert
-        run: "$GITHUB_WORKSPACE/ArxLang/src/ArxLang/bin/Release/net10.0/ArxLang tests/self_test.arx"
+      - name: Run self_test.nx
+        working-directory: nyxilum-assert
+        run: "$GITHUB_WORKSPACE/NyxilumLang/src/NyxilumLang/bin/Release/net10.0/Nx tests/self_test.nx"
