@@ -73,6 +73,8 @@ main()
 | `t.assertFalse(condition, label)` | `condition` — хиба |
 | `t.assertNull(value, label)` | `value` — `null` |
 | `t.assertArrayEqual(actual, expected, label)` | масиви однакової довжини й елементів (не порівняння посилань) |
+| `t.assertMapEqual(actual, expected, label)` | мапи з однаковими ключами й значеннями (не порівняння посилань) |
+| `t.assertThrows(fn, label)` | виклик `fn()` кидає помилку (`fn` — функція без аргументів) |
 | `t.summary()` | друкує підсумок `X/Y пройдено` |
 
 ## Код виходу для CI

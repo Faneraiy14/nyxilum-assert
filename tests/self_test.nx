@@ -14,6 +14,19 @@ func main() {
     var arr2 = [1, 2, 3]
     t.assertArrayEqual(arr1, arr2, "однакові масиви")
 
+    var map1 = newMap()
+    mapSet(map1, "a", 1)
+    mapSet(map1, "b", 2)
+    var map2 = newMap()
+    mapSet(map2, "b", 2)
+    mapSet(map2, "a", 1)
+    t.assertMapEqual(map1, map2, "однакові мапи (інший порядок вставки)")
+
+    func boom() {
+        throw "бум"
+    }
+    t.assertThrows(boom, "assertThrows ловить throw")
+
     t.summary()
     if t.failed > 0 {
         exit(1)

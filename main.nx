@@ -89,6 +89,55 @@ func TestState.assertArrayEqual(actual, expected, label) {
     }
 }
 
+// Порівнює мапи за ключами й значеннями (== для мап так само порівнював
+// би посилання) — спершу кількість ключів, потім кожне значення окремо,
+// щоб повідомлення не звелось до просто "false".
+func TestState.assertMapEqual(actual, expected, label) {
+    var keysA = mapKeys(actual)
+    var keysE = mapKeys(expected)
+    if len(keysA) != len(keysE) {
+        print("  ✗ " + label + " (різна кількість ключів: " + toString(len(keysA)) + " проти " + toString(len(keysE)) + ")")
+        self.failed = self.failed + 1
+        return
+    }
+    var i = 0
+    var allMatch = true
+    while i < len(keysA) {
+        var k = keysA[i]
+        if !mapHas(expected, k) || mapGet(actual, k) != mapGet(expected, k) {
+            allMatch = false
+        }
+        i = i + 1
+    }
+    if allMatch {
+        print("  ✓ " + label)
+        self.passed = self.passed + 1
+    } else {
+        print("  ✗ " + label + " (значення мап не збігаються)")
+        self.failed = self.failed + 1
+    }
+}
+
+// fn - функція без аргументів (значення, як у sort(arr,cmp)); очікується,
+// що виклик fn() кине помилку. На відміну від вбудованого lib/testing.nx
+// (де провал одразу throw), тут провал лише рахується - узгоджено з
+// рештою TestState, де жодна інша перевірка теж не кидає.
+func TestState.assertThrows(fn, label) {
+    var threw = false
+    try {
+        fn()
+    } catch (e) {
+        threw = true
+    }
+    if threw {
+        print("  ✓ " + label)
+        self.passed = self.passed + 1
+    } else {
+        print("  ✗ " + label + " (очікувався throw, але його не було)")
+        self.failed = self.failed + 1
+    }
+}
+
 func TestState.summary() {
     var total = self.passed + self.failed
     print("")
