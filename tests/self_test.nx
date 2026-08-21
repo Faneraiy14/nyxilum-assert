@@ -14,6 +14,15 @@ func main() {
     var arr2 = [1, 2, 3]
     t.assertArrayEqual(arr1, arr2, "однакові масиви")
 
+    // Регресія: == на масивах/мапах порівнює ПОСИЛАННЯ, не вміст, тож
+    // [1,[2,3]] != [1,[2,3]] (два різні об'єкти-літерали) - deepEqual()
+    // всередині assertArrayEqual/assertMapEqual мав це виправити.
+    t.assertArrayEqual([1, [2, 3]], [1, [2, 3]], "вкладені масиви - однакові")
+    // "Мав відрізнятись" перевіряємо через сам deepEqual(), а не
+    // assertArrayEqual - інакше навмисний негативний кейс збільшив би
+    // t.failed і провалив би весь файл через exit(1) унизу.
+    t.assertFalse(deepEqual([1, [2, 3]], [1, [2, 4]]), "вкладені масиви - deepEqual бачить різницю")
+
     var map1 = newMap()
     mapSet(map1, "a", 1)
     mapSet(map1, "b", 2)
@@ -21,6 +30,16 @@ func main() {
     mapSet(map2, "b", 2)
     mapSet(map2, "a", 1)
     t.assertMapEqual(map1, map2, "однакові мапи (інший порядок вставки)")
+
+    var mapNested1 = newMap()
+    mapSet(mapNested1, "list", [1, 2])
+    var mapNested2 = newMap()
+    mapSet(mapNested2, "list", [1, 2])
+    t.assertMapEqual(mapNested1, mapNested2, "мапи з вкладеними масивами - однакові")
+
+    var mapNested3 = newMap()
+    mapSet(mapNested3, "list", [9, 9])
+    t.assertFalse(deepEqual(mapNested1, mapNested3), "мапи з вкладеними масивами - deepEqual бачить різницю")
 
     func boom() {
         throw "бум"

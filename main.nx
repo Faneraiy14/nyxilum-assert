@@ -63,9 +63,49 @@ func TestState.assertNull(value, label) {
     self.assertTrue(isNull(value), label)
 }
 
-// Порівнює масиви поелементно (== для масивів порівнював би посилання,
-// не вміст) — окрема перевірка довжини й кожного елемента з понятним
-// повідомленням, а не просто "false".
+// == / != на масивах і мапах у NyxilumLang порівнюють ПОСИЛАННЯ, не
+// вміст (те саме, що вже застерігав старий коментар тут) - тому
+// [1,[2,3]] != [1,[2,3]] навіть коли елементи структурно ідентичні:
+// вкладені масиви-літерали - це два різні об'єкти. deepEqual()
+// рекурсивно порівнює вміст масивів/мап, а не посилання, і на
+// примітивах (числа/рядки/bool) просто падає назад на ==.
+func deepEqual(a, b) {
+    if isArray(a) && isArray(b) {
+        if len(a) != len(b) {
+            return false
+        }
+        var i = 0
+        while i < len(a) {
+            if !deepEqual(a[i], b[i]) {
+                return false
+            }
+            i = i + 1
+        }
+        return true
+    }
+    if typeOf(a) == "map" && typeOf(b) == "map" {
+        var keysA = mapKeys(a)
+        var keysB = mapKeys(b)
+        if len(keysA) != len(keysB) {
+            return false
+        }
+        var i = 0
+        while i < len(keysA) {
+            var k = keysA[i]
+            if !mapHas(b, k) || !deepEqual(mapGet(a, k), mapGet(b, k)) {
+                return false
+            }
+            i = i + 1
+        }
+        return true
+    }
+    return a == b
+}
+
+// Порівнює масиви поелементно через deepEqual (не == напряму — той
+// порівнював би вкладені масиви/мапи за посиланням, не вмістом) —
+// окрема перевірка довжини й кожного елемента з понятним повідомленням,
+// а не просто "false".
 func TestState.assertArrayEqual(actual, expected, label) {
     if len(actual) != len(expected) {
         print("  ✗ " + label + " (різна довжина: " + toString(len(actual)) + " проти " + toString(len(expected)) + ")")
@@ -75,7 +115,7 @@ func TestState.assertArrayEqual(actual, expected, label) {
     var i = 0
     var allMatch = true
     while i < len(actual) {
-        if actual[i] != expected[i] {
+        if !deepEqual(actual[i], expected[i]) {
             allMatch = false
         }
         i = i + 1
@@ -104,7 +144,7 @@ func TestState.assertMapEqual(actual, expected, label) {
     var allMatch = true
     while i < len(keysA) {
         var k = keysA[i]
-        if !mapHas(expected, k) || mapGet(actual, k) != mapGet(expected, k) {
+        if !mapHas(expected, k) || !deepEqual(mapGet(actual, k), mapGet(expected, k)) {
             allMatch = false
         }
         i = i + 1
